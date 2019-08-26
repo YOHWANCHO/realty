@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    							http://www.springframework.org/schema/beans/spring-beans.xsd
+                        		http://www.springframework.org/schema/context 
+                        		http://www.springframework.org/schema/context/spring-context.xsd
+                        		http://www.springframework.org/schema/util 
+                        		http://www.springframework.org/schema/util/spring-util-3.2.xsd">
+
+ 	<bean class="org.springframework.web.servlet.view.BeanNameViewResolver">
+  		<property name="order" value="0"/>
+ 	</bean>
+ 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" >	<!-- 파일 전송을 위한 멀티파트 리졸버 설정 -->
+		<property name="maxUploadSize" value="534288000"/>					<!-- 최대파일 업로드 용량 -->																
+<!-- 		<property name="maxInMemorySize" value="100000000"/> -->
+ 	</bean>
+ 	
+ 	<util:properties id="conf" location="classpath:conf/properties.xml" />	<!-- 프로퍼티 파일 -->
+ 	
+ 	<!-- excel 추가 -->
+	<bean id="excelView" class="kr.co.realty.util.ExcelView" />
+	<bean id="excelViewReader" class="kr.co.realty.util.ExcelViewReader" />
+	
+	<!-- json 추가 STR -->	
+	<bean id="jsonView" class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
+		<property name="contentType" value="application/json;charset=UTF-8"/>
+	</bean>  
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.BeanNameViewResolver">  
+	    <property name="order" value="1"/>
+	</bean>
+	<!-- json 추가 END -->
+ 
+	<beans profile="devel">
+ 		<bean id="fileDownloadUtil" class="kr.co.realty.util.FileDownloadUtil" >
+			<property name="localPath" value="D:\Java\www\63city_re\ROOT\resources\upload"/>
+ 		</bean>
+ 		<bean id="fileUploadUtil" class="kr.co.realty.util.FileUploadUtil" >
+			<property name="localPath" value="D:\Java\www\63city_re\ROOT\resources\upload"/>
+		</bean>
+	</beans>
+	
+	<beans profile="local">
+ 		<bean id="fileDownloadUtil" class="kr.co.realty.util.FileDownloadUtil" >
+			<property name="localPath" value="D:\localDEV\workspace\63realty\src\main\webapp\resources\upload"/>
+ 		</bean>
+ 		<bean id="fileUploadUtil" class="kr.co.realty.util.FileUploadUtil" >
+			<property name="localPath" value="D:\localDEV\workspace\63realty\src\main\webapp\resources\upload"/>
+		</bean>
+	</beans>	
+	
+	<beans profile="run">
+ 		<bean id="fileDownloadUtil" class="kr.co.realty.util.FileDownloadUtil" >
+			<property name="localPath" value="/63_upload/HPCITY/upload"/>	
+ 		</bean>
+ 		<bean id="fileUploadUtil" class="kr.co.realty.util.FileUploadUtil" >
+			<property name="localPath" value="/63_upload/HPCITY/upload"/>	
+		</bean>
+	</beans>
+</beans>

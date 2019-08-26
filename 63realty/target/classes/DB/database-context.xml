@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+ 
+ 
+ <!-- 스프링 트랜잭션 사용 -->
+ <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">	
+   <property name="dataSource" ref="databaseSource"/>
+</bean>
+
+	<beans profile="devel,local">																											<!-- 마이다스 아이티 개발용 프로파일 devel -->
+	    <bean id="databaseSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"> <!-- 첨미동 일반 데이타소스 -->
+			<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />	<!-- DB 드라이버 -->
+	        <property name="url" value="" />		<!-- DB 서버 IP -->
+	        <property name="username" value=""/>												<!-- 사용자 이름 -->
+	        <property name="password" value=""/>											<!-- 사용자 PW -->
+	        <property name="defaultAutoCommit" value="false"/>									<!-- autocommit 여부 -->
+	        <property name="initialSize" value="10" />													<!-- 초기에 생성될 커넥션 개수 -->
+			<property name="maxActive" value="50" />													<!-- 커넥션 풀이 제공할 최대 커넥션 개수 -->
+			<property name="maxWait" value="1000" />													<!-- 풀에 커넥션이 존재하지 않을때, 커넥션이 풀에 다시 리턴되기까지 대기시간 -->
+			<property name="maxIdle" value="30" />														<!-- 사용되지 않고 풀에 저장될 수 있는 최대 커넥션 개수, 음수일 경우 제한없음 -->
+			<property name="testOnBorrow" value="true" />											<!-- 커넥션 풀에서 커넥션을 가져올 경우 커넥션이 유효한지 검사 -->
+			<property name="testOnReturn" value="true" />											<!-- 커넥션풀에 커넥션을 반환할 때, 커넥션이 유효하지 검사 -->
+			<property name="validationQuery" value="select 1 from dual" />				
+			<property name="testWhileIdle" value="true" />											<!-- 커넥션을 추출할 때, 커넥션이 유효한지 검사해서 유효하지 않은 커넥션은 풀에서 제거 -->
+			<property name="timeBetweenEvictionRunsMillis" value="130000" />					<!-- 사용되지 않은 커넥션을 추출하는 쓰레드의 실행주기를 설정 -->
+			<property name="minEvictableIdleTimeMillis" value="120000" />						<!-- 사용되지 않은 커넥션을 추출할 때 이 속성에서 지정한 시간이상 비활성화 상태인 커넥션만 추출 -->
+			<property name="numTestsPerEvictionRun" value="20" />								<!-- 사용되지 않는 커넥션을 몇 개 검사할지 지정 -->
+			<property name="removeAbandonedTimeout" value="30" />							<!-- 사용할 수 있는 커넥션이 부족해지면 버려진 커넥션을 찾아 복구하고 재생, 커넥션이 버려졌다고 간주되는 시간(초) --> 
+			<property name="removeAbandoned" value="true" />										<!-- 버려진 커넥션을 제거하고 재생-->
+			<property name="logAbandoned" value="false" />											<!-- 커넥션 자원을 낭비한 코드 위치의 로그를 남김 -->
+	    </bean>
+	    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionFactoryBean">				<!-- sql 세션 팩토리 빈 생성-->
+	        <property name="dataSource" ref="databaseSource" />									<!-- 상단에 정의한 databaseSource를 참조 -->
+	        <property name="configLocation" value="classpath:/DB/typeAliases.xml" />		<!-- vo 설정 -->
+	        <property name="mapperLocations" value="classpath:/DB/SQL_*.xml" />			<!-- mybatis sql 매핑 -->
+	    </bean>
+	    
+	    <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">		<!-- sql 세션 객체를 얻어 스프링에서 commit rollback 제어  -->
+	        <constructor-arg index="0" ref="sqlSession"/>
+	    </bean>
+	</beans>   
+	
+	 
+	<beans profile="run">																															<!-- 63시티 DB2 용 connection run -->
+	    <bean id="databaseSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+			<property name="driverClassName" value="com.ibm.as400.access.AS400JDBCDriver" />
+	        <property name="url" value="" />
+	        <property name="username" value=""/>
+	        <property name="password" value=""/>	        
+	    </bean>
+	    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionFactoryBean">
+	        <property name="dataSource" ref="databaseSource" />
+	        <property name="configLocation" value="classpath:/DB2/typeAliases.xml" />
+	        <property name="mapperLocations" value="classpath:/DB2/SQL_*.xml" />
+	    </bean>
+	    
+	    <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+	        <constructor-arg index="0" ref="sqlSession"/>
+	    </bean> 
+	    
+	</beans>   
+</beans>

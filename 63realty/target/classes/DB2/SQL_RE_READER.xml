@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper 
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+
+<mapper namespace="reReader"> 
+	<resultMap id="ReReaderVO" type="kr.co.realty.data.reReader.vo.ReReaderVO">
+	<result property="reReaderSeq"	column="RE_READER_SEQ"/>
+	<result property="email"			column="EMAIL"/>
+	<result property="readerName"			column="READER_NAME"/>
+	<result property="readerTeam"			column="READER_TEAM"/>
+	<result property="readerPhone"			column="READER_PHONE"/>
+	<result property="regDate"		column="REG_DATE"/>
+	<result property="cancelDate"	column="CANCEL_DATE"/>
+	<result property="cancelName"			column="CANCEL_NAME"/>
+	<result property="ip"					column="IP"/>
+	<result property="userFlag"		column="USER_FLAG"/>
+ 	</resultMap>
+ 	
+ 	<select id="selectCountOneForReReader" parameterType="ReReaderVO" resultType="integer">
+ 		SELECT COUNT(RE_READER_SEQ)
+ 		FROM HPCDTA.RE_READER
+ 		WHERE USER_FLAG = 'Y' AND DAMO.SCPDECB64('SCPKMAIL', EMAIL)=#{email}
+ 	</select>
+ 	
+ 	<insert id="insertReReader" parameterType="ReReaderVO">
+ 		INSERT INTO
+ 			HPCDTA.RE_READER(
+ 				RE_READER_SEQ
+ 				,EMAIL
+ 				,READER_NAME
+ 				,READER_TEAM
+ 				,READER_PHONE
+ 				,REG_DATE
+ 				,IP
+ 				,USER_FLAG
+ 			)VALUES(
+ 				NEXTVAL FOR HPCDTA.RE_READER_T_SEQ 				
+ 				, DAMO.SCPENCB64('SCPKMAIL', CAST(#{email} AS VARCHAR(100)))    
+ 				,#{readerName,jdbcType=VARCHAR}
+ 				,#{readerTeam,jdbcType=VARCHAR}
+ 				, DAMO.SCPENCB64('SCPKHPNO',CAST(#{readerPhone} AS VARCHAR(50))) 				
+ 				,CURRENT TIMESTAMP
+ 				,#{ip,jdbcType=VARCHAR}
+ 				,#{userFlag,jdbcType=VARCHAR}
+ 			)
+ 	</insert>
+ 	
+ 	<update id="updateCancelForReReader" parameterType="ReReaderVO">
+ 		UPDATE HPCDTA.RE_READER SET 			
+ 			CANCEL_DATE = CURRENT TIMESTAMP
+ 			,CANCEL_NAME = #{cancelName,jdbcType=VARCHAR}
+ 			,USER_FLAG = #{userFlag,jdbcType=VARCHAR}
+ 		WHERE USER_FLAG = 'Y'
+			AND DAMO.SCPDECB64('SCPKMAIL', EMAIL) = #{email,jdbcType=VARCHAR}
+ 	</update>
+ 	
+ 	<select id="selectCountListForReReader"  parameterType="SearchVO" resultType="integer">	
+		SELECT
+			COUNT(RE_READER_SEQ)			
+		FROM HPCDTA.RE_READER 
+		WHERE 1=1		
+		<if test="userFlag != null and userFlag != ''">
+			AND USER_FLAG = #{userFlag}
+		</if>
+		<if test="searchText != null and searchText != ''">
+			AND DAMO.SCPDECB64('SCPKMAIL', EMAIL) LIKE '%'||TRIM(CAST ((#{searchText}) AS VARCHAR(100) CCSID 1208))||'%'
+		</if>
+		<if test="searchFromDate != null and searchFromDate != ''">
+			AND REG_DATE <![CDATA[>=]]> CAST(#{searchFromDate} AS DATE)
+		</if>
+		
+		<if test="searchToDate != null and searchToDate != ''">
+			AND REG_DATE <![CDATA[<=]]> CAST(#{searchFromDate}||' 23:59:59' AS DATE)
+		</if>
+	</select>
+	
+	<select id="selectListForReReader"  parameterType="SearchVO" resultMap="ReReaderVO">
+	SELECT * FROM (	
+		SELECT
+			T1.RE_READER_SEQ
+	        ,DAMO.SCPDECB64('SCPKMAIL', T1.EMAIL) AS EMAIL
+	        ,T1.READER_NAME
+	        ,T1.READER_TEAM
+	        ,DAMO.SCPDECB64('SCPKHPNO', T1.READER_PHONE) AS READER_PHONE
+	        ,T1.REG_DATE
+	        ,T1.CANCEL_DATE
+	        ,T1.CANCEL_NAME
+	        ,T1.IP
+	        ,T1.USER_FLAG
+			,ROW_NUMBER() OVER( ORDER BY T1.REG_DATE DESC) AS RNUM
+		FROM HPCDTA.RE_READER T1			
+		WHERE 1=1
+		<if test="userFlag != null and userFlag != ''">
+			AND T1.USER_FLAG = #{userFlag}
+		</if>
+		<if test="searchText != null and searchText != ''">
+			AND DAMO.SCPDECB64('SCPKMAIL', T1.EMAIL) LIKE '%'||TRIM(CAST ((#{searchText}) AS VARCHAR(100) CCSID 1208))||'%'
+		</if>
+		<if test="searchFromDate != null and searchFromDate != ''">
+			AND T1.REG_DATE <![CDATA[>=]]> CAST(#{searchFromDate} AS DATE)
+		</if>
+		
+		<if test="searchToDate != null and searchToDate != ''">
+			AND T1.REG_DATE <![CDATA[<=]]> CAST(#{searchFromDate}||' 23:59:59' AS DATE)
+		</if>
+		)T WHERE 
+				RNUM BETWEEN ((#{pageIndex}-1) * #{pageCount}) + 1 AND ((#{pageIndex}-1) * #{pageCount}) + #{pageCount}
+	</select>
+	<select id="selectListForReReaderExcel"  parameterType="SearchVO" resultMap="ReReaderVO">	
+		SELECT
+			T1.RE_READER_SEQ
+	        ,DAMO.SCPDECB64('SCPKMAIL', T1.EMAIL) AS EMAIL
+	        ,T1.READER_NAME
+	        ,T1.READER_TEAM
+	        ,DAMO.SCPDECB64('SCPKHPNO', T1.READER_PHONE) AS READER_PHONE
+	        ,T1.REG_DATE
+	        ,T1.CANCEL_DATE
+	        ,T1.CANCEL_NAME
+	        ,T1.IP
+	        ,T1.USER_FLAG
+		FROM HPCDTA.RE_READER T1			
+		WHERE 1=1
+		<if test="userFlag != null and userFlag != ''">
+			AND T1.USER_FLAG = #{userFlag}
+		</if>
+		<if test="searchText != null and searchText != ''">
+			AND DAMO.SCPDECB64('SCPKMAIL', T1.EMAIL) LIKE '%'||TRIM(CAST ((#{searchText}) AS VARCHAR(100) CCSID 1208))||'%'
+		</if>
+		<if test="searchFromDate != null and searchFromDate != ''">
+			AND T1.REG_DATE <![CDATA[>=]]> CAST(#{searchFromDate} AS DATE)
+		</if>
+		
+		<if test="searchToDate != null and searchToDate != ''">
+			AND T1.REG_DATE <![CDATA[<=]]> CAST(#{searchFromDate}||' 23:59:59' AS DATE)
+		</if>
+		ORDER BY T1.REG_DATE DESC
+	</select>
+     	
+</mapper> 
+
+

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+ 
+	<beans profile="devel,local">
+		<bean id="emailSender" class ="kr.co.realty.util.EmailSender" >						
+			<property name="mailSender" ref="mailSender" />
+ 		</bean>
+		
+		<!--https://myaccount.google.com/lesssecureapps (보안수준이 낮은 앱 허용 사용으로 변경해야 함) --> 
+		
+		<bean id="mailSender" class ="org.springframework.mail.javamail.JavaMailSenderImpl" >		<!-- 스프링을 이용한 메일 전송 -->
+		    <property name="host" value="smtp.gmail.com" />													<!-- Gmail SMTP server -->
+		    <property name="port" value="25" />																		<!-- 포트 -->
+		    <property name="defaultEncoding" value="utf-8"/>
+		    <property name="username" value="yohwanderi@gmail.com" />																	<!-- 인증을 위한 gmail 아이디 -->
+		    <property name="password" value="147852aa" />																	<!-- 인증을 위한 gmail pw -->		
+		    <property name="javaMailProperties">
+			    <props>
+			        <prop key="mail.smtp.starttls.enable">true</prop>
+			        <prop key="mail.smtp.auth">true</prop>
+			        <prop key="mail.transport.protocol">smtp</prop>
+    	            <prop key="mail.smtp.auth">true</prop>
+    	            <prop key="mail.smtp.starttls.enable">true</prop>
+    	            <prop key="mail.debug">false</prop>
+			    </props>
+		    </property>
+		</bean>
+	</beans>    
+	
+	<beans profile="run">
+		<bean id="emailSender" class ="kr.co.realty.util.EmailSender" >
+			<property name="mailSender" ref="mailSender" />
+ 		</bean>
+	
+		<bean id="mailSender" class ="org.springframework.mail.javamail.JavaMailSenderImpl" >
+		    <property name="host" value="203.233.82.5" />
+		    <property name="port" value="25" />
+		    <property name="defaultEncoding" value="utf-8"/>
+		    <property name="username" value="63mail" />
+		    <property name="password" value="63citycity^#" />
+		    <property name="javaMailProperties">
+			    <props>
+			        <prop key="mail.smtp.starttls.enable">true</prop>
+			        <prop key="mail.smtp.auth">true</prop>
+			        <prop key="mail.transport.protocol">smtp</prop>
+    	            <prop key="mail.smtp.auth">true</prop>
+    	            <prop key="mail.smtp.starttls.enable">true</prop>
+    	            <prop key="mail.debug">false</prop>
+			    </props>
+		    </property>
+		</bean>
+	</beans>    
+</beans>
+

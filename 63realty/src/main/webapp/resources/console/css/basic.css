@@ -1,0 +1,38 @@
+@charset "utf-8";
+
+/* Font Style
+*******************************/
+@font-face {
+ font-family: 'NanumBarunGothic';
+ src: url(webfont/NanumBarunGothicWeb.eot);
+ src: url(webfont/NanumBarunGothicWeb.eot?#iefix) format('embedded-opentype'),
+      url(webfont/NanumBarunGothicWeb.woff) format('woff'),
+      url(webfont/NanumBarunGothicWeb.ttf) format('truetype');
+}
+@font-face {
+ font-family: 'NanumBarunGothicBold';
+ src: url(webfont/NanumBarunGothicWebBold.eot);
+ src: url(webfont/NanumBarunGothicWebBold.eot?#iefix) format('embedded-opentype'),
+      url(webfont/NanumBarunGothicWebBold.woff) format('woff'),
+      url(webfont/NanumBarunGothicWebBold.ttf) format('truetype');
+}
+
+/* Reset
+*******************************/
+label, button { cursor:pointer}
+a { background-color:transparent;}
+a:link, a:visited { color:#555; text-decoration:none}
+a:hover, a:focus, a:active { color:#555; text-decoration:none}
+a, abbr, acronym, address, applet, article, aside, audio, b, blockquote, big, body, center, canvas, caption, cite, code, command, datalist, dd, del, details, dfn, dl, div, dt, em, embed, fieldset, figcaption, figure, font, footer, form, h1, h2, h3, h4, h5, h6, header, hgroup, html, i, iframe, img, ins, kbd, keygen, label, legend, li, meter, nav, menu, object, ol, output, p, pre, progress, q, s, samp, section, small, span, source, strike, strong, sub, sup, table, tbody, tfoot, thead, th, tr, td, video, tt, u, ul, var { margin:0; padding:0}
+h1, h2, h3, h4, h5, h6, th, td, table, input, button, select, textarea, sub{ font-size:1em}
+body, input, button, select, textarea { font-family:NanumBarunGothic, dotum, '돋움', '굴림', Gulim, sans-serif; font-size:12px; font-style: normal; color:#555;}
+em, cite, address, optgroup { font-style:normal}
+img, input, button, select, textarea { vertical-align:middle}
+ul, ol { list-style:none}
+img, fieldset { border:0}
+abbr, acronym { cursor:help; border-bottom:1px dotted black}
+table { width:100%; border-spacing:0;}
+legend, hr { overflow:hidden; position:absolute; top:0; left:0}
+legend, hr, caption { visibility:hidden; font-size:0; width:0; height:0; line-height:0}
+article, aside, audio, canvas, command, datalist, details, embed, figcaption, figure, footer, header, hgroup, keygen, meter, nav, output, progress, section, source, video{ display: block}
+mark, rp, rt, ruby, summary, time{ display: inline }

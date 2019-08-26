@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<!-- file folder Definition -->
+	<entry key="file.folder.building">/building/</entry>
+	<entry key="file.folder.oneFile">/oneFile/</entry>
+	<entry key="file.folder.board">/board/</entry>	
+	<entry key="file.folder.editor">/editorImage/</entry>
+	<entry key="file.folder.voc">/voc/</entry>
+	<entry key="file.folder.tempFile">/temp/</entry>
+	<entry key="file.folder.viewPath">/resources/upload</entry>
+	
+	
+	<!-- 63시티 대표이메일 -->
+<!-- 	<entry key="realty.email">eleizer@naver.com</entry> -->
+	<entry key="realty.email">63admin@hanwha.com</entry>
+	
+	<!-- 신문고 받을 이메일 주소  -->
+<!-- 	<entry key="sinmungo.email">yohwan79@naver.com</entry> -->
+	<entry key="sinmungo.email">jungone63@hanwha.com</entry>
+		
+	<!-- 신문고 메일 템플릿 -->
+	<entry key="sinmungo.email.template">/template/mail_cyber.html</entry>
+	
+<!-- talktalk 파라미터 start-->
+	<!-- talktalk 수집채널 코드(63시티) -->
+	<entry key="talktalk.IF_SYSTEM_ID">CODE0000006023</entry>
+	
+	<!-- talktalk 고객사 코드 -->
+	<entry key="talktalk.DOMAIN_ID">NODE0000000009</entry>
+	
+	<!-- talktalk 접수 카테고리 아이디 -->
+	<entry key="talktalk.NODE_ID">NODE0000001245</entry>
+		
+	<!-- talktalk 질문채널 아이디(홈페이지) -->
+	<entry key="talktalk.QUESTION_CHANNEL_ID">CHNL0000000101</entry>
+	
+	<!-- talktalk 답변채널아이디 -->
+	<entry key="talktalk.ANSWER_CHANNEL_ID">CHNL0000000034</entry>
+	
+	<!-- talktalk 공개여부 -->
+	<entry key="talktalk.PUBLIC_FLAG">Y</entry>	
+<!-- talktalk 파라미터 end-->	
+</properties>

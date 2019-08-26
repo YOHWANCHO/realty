@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="log">
+	<resultMap id="AdmLogVO" type="kr.co.realty.data.log.vo.AdmLogVO">
+		<result property ="admLogSeq"	column="ADM_LOG_SEQ"/>
+		<result property ="admID"			column="ADM_ID"/>
+		<result property ="admName"	column="ADM_NAME"/>
+		<result property ="regDate"		column="REG_DATE"/>
+		<result property ="ip"				column="IP"/>
+		<result property ="loginYN"		column="LOGIN_YN"/>				
+	</resultMap>
+	
+	<resultMap id="UserLogVO" type="kr.co.realty.data.log.vo.UserLogVO">
+		<result property ="sessionID"		column="SESSION_ID"/>
+		<result property ="ip"				column="IP"/>
+		<result property ="intDate"		column="INT_DATE"/>
+		<result property ="regDate"		column="REG_DATE"/>
+		<result property ="refererUrl"		column="REFERER_URL"/>					
+		<result property ="userCnt"		column="USER_CNT"/>					
+	</resultMap>
+	
+	<insert id="insertAdminLog" parameterType="AdmLogVO">
+		INSERT INTO
+			HPCDTA.ADM_LOG
+		(
+		ADM_LOG_SEQ
+		,ADM_ID
+		,ADM_NAME
+		,REG_DATE
+		,IP
+		,LOGIN_YN
+		)
+		VALUES (
+		NEXTVAL FOR HPCDTA.ADM_LOG_T_SEQ
+		, #{admID}
+		, #{admName}	
+		, CURRENT TIMESTAMP
+		, #{ip}
+		, #{loginYN}
+		)
+	</insert>
+	
+	<select id="selectListForAdmLog"  parameterType="SearchVO" resultMap="AdmLogVO">
+		SELECT * FROM(
+		SELECT 
+			ADM_LOG_SEQ
+			, ADM_ID
+			, ADM_NAME
+			, REG_DATE
+			, IP
+			, LOGIN_YN
+			, ROW_NUMBER() OVER( ORDER BY REG_DATE DESC, ADM_ID DESC) AS RNUM
+		FROM HPCDTA.ADM_LOG WHERE 1=1
+		<if test="searchText != null and searchText != ''">
+			<if test="searchType == 'adm'">
+				AND (ADM_ID LIKE '%'||TRIM(CAST ((#{searchText}) AS VARCHAR(100) CCSID 1208))||'%')
+			</if>
+			<if test="searchType == 'name'">
+				AND (ADM_NAME LIKE '%'||TRIM(CAST ((#{searchText}) AS VARCHAR(100) CCSID 1208))||'%')
+			</if>	
+			<if test="searchType == 'ip'">
+				AND (IP LIKE '%'||TRIM(CAST ((#{searchText}) AS VARCHAR(100) CCSID 1208))||'%')
+			</if>	
+		</if>
+		)T WHERE 
+			RNUM BETWEEN ((#{pageIndex}-1) * #{pageCount}) + 1 AND ((#{pageIndex}-1) * #{pageCount}) + #{pageCount}
+	</select>
+	
+	<select id="selectCountListForAdmLog"  parameterType="SearchVO" resultType="integer">		
+		SELECT 
+			COUNT(ADM_LOG_SEQ)			
+		FROM HPCDTA.ADM_LOG WHERE 1=1
+		<if test="searchText != null and searchText != ''">
+			<if test="searchType == 'adm'">
+				AND (ADM_ID LIKE '%'||TRIM(CAST ((#{searchText}) AS VARCHAR(100) CCSID 1208))||'%')
+			</if>
+			<if test="searchType == 'name'">
+				AND (ADM_NAME LIKE '%'||TRIM(CAST ((#{searchText}) AS VARCHAR(100) CCSID 1208))||'%')
+			</if>	
+			<if test="searchType == 'ip'">
+				AND (IP LIKE '%'||TRIM(CAST ((#{searchText}) AS VARCHAR(100) CCSID 1208))||'%')
+			</if>	
+		</if>
+	</select>
+	
+	
+	<insert id="insertUserLog" parameterType="UserLogVO">
+		INSERT INTO
+			HPCDTA.USER_LOG
+		(
+		SESSION_ID
+		,IP		
+		,INT_DATE
+		,REG_DATE
+		,REFERER_URL		
+		)
+		VALUES (
+		#{sessionID,jdbcType=VARCHAR}
+		, #{ip,jdbcType=VARCHAR}		
+		, INTEGER(REPLACE(CHAR(CURRENT DATE,ISO),'-',''))
+		, CURRENT TIMESTAMP
+		, #{refererUrl,jdbcType=VARCHAR}		
+		)
+	</insert>
+	
+	<select id="selectListForUserLog"  parameterType="SearchVO" resultMap="UserLogVO">		
+		SELECT
+			INT_DATE, COUNT(INT_DATE) as USER_CNT
+		FROM HPCDTA.USER_LOG
+		WHERE 1=1
+		<if test="intFromDate != 0">
+			AND INT_DATE <![CDATA[>=]]> #{intFromDate}
+		</if>
+		<if test="intToDate != 0">
+			AND INT_DATE <![CDATA[<=]]> #{intToDate}
+		</if>
+		GROUP BY INT_DATE
+		 ORDER BY INT_DATE DESC
+	</select>
+	
+	
+	
+</mapper>

@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="manager">
+	<resultMap id="ManagerVO" type="kr.co.realty.data.manager.vo.ManagerVO">
+		<result property = "bldManagerSeq"	column="BLD_MANAGER_SEQ" />
+		<result property = "bldInfoSeq"		column="BLD_INFO_SEQ" />
+		<result property = "bldZone"			column="BLD_ZONE" />
+		<result property = "bldDivision"		column="BLD_DIVISION" />
+		<result property = "pmer"				column="PMER" />
+		<result property = "csManager"		column="CS_MANAGER" />
+		<result property = "placeManager"	column="PLACE_MANAGER" />
+		<result property = "regDate"			column="REG_DATE" />
+		<result property = "regID"				column="REG_ID" />
+		<result property = "csName"			column="CS_NAME" />
+		<result property = "placeName"		column="PLACE_NAME" />
+		
+		<result property = "csMail"			column="CS_MAIL" />
+		<result property = "placeMail"		column="PLACE_MAIL" />
+		<result property = "csPhone"			column="CS_PHONE" />
+		<result property = "placePhone"		column="PLACE_PHONE" />
+		
+		<result property = "pmerName"		column="PMER_NAME" />		
+		<result property = "bldName"			column="BLD_NAME" />
+		
+		<result property = "csTeam"			column="CS_TEAM" />
+		<result property = "placeTeam"			column="PLACE_TEAM" />
+		<result property = "pmerTeam"			column="PMER_TEAM" />		
+	</resultMap>
+	
+	 <insert id="insertBuildingManager" parameterType="ManagerVO">     	
+          INSERT INTO 
+          	BLD_MANAGER ( 
+			BLD_MANAGER_SEQ
+			,BLD_INFO_SEQ			
+			,PMER
+			,CS_MANAGER
+			,PLACE_MANAGER
+			,REG_DATE
+			,REG_ID
+          ) VALUES ( 
+                BLD_MANAGER_T_SEQ.NEXTVAL
+				,#{bldInfoSeq}				
+				,#{pmer,jdbcType=VARCHAR}
+				,#{csManager,jdbcType=VARCHAR}
+				,#{placeManager,jdbcType=VARCHAR}
+				,SYSDATE				
+				,#{regID}
+          ) 
+    </insert>
+    
+    <select id="selectCountListForManager"  parameterType="SearchVO" resultType="integer">	
+		SELECT
+			COUNT(a.BLD_MANAGER_SEQ)			            
+		FROM BLD_MANAGER a
+			LEFT OUTER JOIN ADM_MEMBER t1 ON a.CS_MANAGER = t1.ADM_ID
+			LEFT OUTER JOIN ADM_MEMBER t2 ON a.PLACE_MANAGER = t2.ADM_ID
+			LEFT OUTER JOIN ADM_MEMBER t3 ON a.PMER = t3.ADM_ID
+			LEFT OUTER JOIN BLD_INFO t4 ON a.BLD_INFO_SEQ = t4.BLD_INFO_SEQ
+		WHERE 1=1
+		<if test=" bldZone != null and bldZone != '' ">
+			AND t4.BLD_ZONE = #{bldZone,jdbcType=INTEGER}
+		</if>
+		<if test=" bldDivision != null and bldDivision != '' ">
+			AND t4.BLD_DIVISION = #{bldDivision,jdbcType=INTEGER}
+		</if>
+		<if test=" bldInfoSeq != null and bldInfoSeq != '' ">
+			AND t4.BLD_INFO_SEQ = #{bldInfoSeq,jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	<select id="selectListForManager"  parameterType="SearchVO" resultMap="ManagerVO">
+	SELECT * FROM (	
+		SELECT
+			a.BLD_MANAGER_SEQ
+			,a.BLD_INFO_SEQ			
+			,a.PMER
+			,a.CS_MANAGER
+			,a.PLACE_MANAGER
+			,a.REG_DATE
+			,a.REG_ID			
+			,t1.ADM_NAME AS CS_NAME
+			,t2.ADM_NAME AS PLACE_NAME
+			
+			,t1.EMAIL AS CS_MAIL
+			,t2.EMAIL AS PLACE_MAIL
+			,t1.MOBILENUM AS CS_PHONE
+			,t2.MOBILENUM AS PLACE_PHONE			
+			
+			,t3.ADM_NAME AS PMER_NAME
+			,t4.BLD_NAME AS BLD_NAME
+			,ROW_NUMBER() OVER( ORDER BY a.REG_DATE DESC, a.BLD_MANAGER_SEQ DESC) AS RNUM
+		FROM BLD_MANAGER a
+			LEFT OUTER JOIN ADM_MEMBER t1 ON a.CS_MANAGER = t1.ADM_ID
+			LEFT OUTER JOIN ADM_MEMBER t2 ON a.PLACE_MANAGER = t2.ADM_ID
+			LEFT OUTER JOIN ADM_MEMBER t3 ON a.PMER = t3.ADM_ID
+			LEFT OUTER JOIN BLD_INFO t4 ON a.BLD_INFO_SEQ = t4.BLD_INFO_SEQ
+		WHERE 1=1
+		<if test=" bldZone != null and bldZone != '' ">
+			AND t4.BLD_ZONE = #{bldZone,jdbcType=INTEGER}
+		</if>
+		<if test=" bldDivision != null and bldDivision != '' ">
+			AND t4.BLD_DIVISION = #{bldDivision,jdbcType=INTEGER}
+		</if>
+		<if test=" bldInfoSeq != null and bldInfoSeq != '' ">
+			AND t4.BLD_INFO_SEQ = #{bldInfoSeq,jdbcType=INTEGER}
+		</if>
+		)T WHERE 
+				RNUM BETWEEN ((#{pageIndex}-1) * #{pageCount}) + 1 AND ((#{pageIndex}-1) * #{pageCount}) + #{pageCount}
+	</select>
+		
+	<select id="selectOneForManager"  parameterType="ManagerVO" resultMap="ManagerVO">
+		SELECT
+			a.BLD_MANAGER_SEQ
+			,a.BLD_INFO_SEQ
+			,a.REG_DATE
+			,a.REG_ID
+			,a.CS_MANAGER
+			,t1.ADM_NAME AS CS_NAME
+			,t1.DEPARTMENT_NAME AS CS_TEAM
+			,a.PLACE_MANAGER
+			,t2.ADM_NAME AS PLACE_NAME
+			,t2.DEPARTMENT_NAME AS PLACE_TEAM
+			,a.PMER
+			,t3.ADM_NAME AS PMER_NAME
+			,t3.DEPARTMENT_NAME AS PMER_TEAM
+			,t4.BLD_NAME AS BLD_NAME
+			,t4.BLD_ZONE AS BLD_ZONE
+            ,t4.BLD_DIVISION AS BLD_DIVISION
+		FROM BLD_MANAGER a
+			LEFT OUTER JOIN ADM_MEMBER t1 ON a.CS_MANAGER = t1.ADM_ID
+			LEFT OUTER JOIN ADM_MEMBER t2 ON a.PLACE_MANAGER = t2.ADM_ID
+			LEFT OUTER JOIN ADM_MEMBER t3 ON a.PMER = t3.ADM_ID
+			LEFT OUTER JOIN BLD_INFO t4 ON a.BLD_INFO_SEQ = t4.BLD_INFO_SEQ
+		WHERE a.BLD_MANAGER_SEQ = #{bldManagerSeq}	
+	</select>
+	
+	<select id="selectOneForManagerBldInfo"  parameterType="ManagerVO" resultMap="ManagerVO">
+		SELECT
+			a.BLD_MANAGER_SEQ
+			,a.BLD_INFO_SEQ
+			,a.REG_DATE
+			,a.REG_ID
+			,a.CS_MANAGER
+			,t1.ADM_NAME AS CS_NAME
+			,t1.DEPARTMENT_NAME AS CS_TEAM
+			,a.PLACE_MANAGER
+			,t2.ADM_NAME AS PLACE_NAME
+			,t2.DEPARTMENT_NAME AS PLACE_TEAM
+			,a.PMER
+			,t1.EMAIL AS CS_MAIL
+			,t2.EMAIL AS PLACE_MAIL
+			,t1.MOBILENUM AS CS_PHONE
+			,t2.MOBILENUM AS PLACE_PHONE
+			,t3.ADM_NAME AS PMER_NAME
+			,t3.DEPARTMENT_NAME AS PMER_TEAM
+			,t4.BLD_NAME AS BLD_NAME
+			,t4.BLD_ZONE AS BLD_ZONE
+            ,t4.BLD_DIVISION AS BLD_DIVISION
+		FROM BLD_MANAGER a
+			LEFT OUTER JOIN ADM_MEMBER t1 ON a.CS_MANAGER = t1.ADM_ID
+			LEFT OUTER JOIN ADM_MEMBER t2 ON a.PLACE_MANAGER = t2.ADM_ID
+			LEFT OUTER JOIN ADM_MEMBER t3 ON a.PMER = t3.ADM_ID
+			LEFT OUTER JOIN BLD_INFO t4 ON a.BLD_INFO_SEQ = t4.BLD_INFO_SEQ
+		WHERE a.BLD_INFO_SEQ = #{bldInfoSeq}	
+	</select>
+	
+	<update id="updateBuildingManager" parameterType="ManagerVO">
+		UPDATE BLD_MANAGER SET
+			PMER = #{pmer}
+			,CS_MANAGER = #{csManager}
+			,PLACE_MANAGER = #{placeManager}			
+		WHERE 
+			BLD_MANAGER_SEQ = #{bldManagerSeq}
+	</update>
+	
+	<delete id="deleteOneForManager" parameterType="ManagerVO">
+		DELETE FROM BLD_MANAGER WHERE BLD_MANAGER_SEQ = #{bldManagerSeq}
+	</delete>
+</mapper>

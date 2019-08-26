@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+  xmlns:beans="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/security
+           http://www.springframework.org/schema/security/spring-security.xsd
+			http://www.springframework.org/schema/context 
+			http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+    <http pattern="/resources/**" security="none"/>
+     
+	<http auto-config="true" use-expressions="true">
+		<!-- HTTPS용 START -->
+<!-- 		<intercept-url pattern="/cs/voc_write" access="permitAll" requires-channel="https"/> -->
+<!-- 		<intercept-url pattern="/cs/voc_writeAction" access="permitAll" requires-channel="https"/> -->
+<!-- 		<intercept-url pattern="/cs/cyber_write" access="permitAll" requires-channel="https"/> -->
+<!-- 		<intercept-url pattern="/cs/cyber_writeAction" access="permitAll" requires-channel="https"/> -->
+<!-- 		<intercept-url pattern="/ajax/**" access="permitAll" requires-channel="https"/> -->
+<!-- 		<intercept-url pattern="/console" access="permitAll" requires-channel="https"/> -->
+<!-- 		<intercept-url pattern="/console/login" access="permitAll" requires-channel="https"/> -->
+<!-- 		<intercept-url pattern="/console/**" access="hasRole('ROLE_ADMIN')" requires-channel="https"/> -->
+		<!-- HTTPS용 END -->
+		
+		<!-- HTTP용 START -->
+		<intercept-url pattern="/cs/voc_write" access="permitAll" requires-channel="http"/>
+		<intercept-url pattern="/cs/voc_writeAction" access="permitAll" requires-channel="http"/>
+		<intercept-url pattern="/cs/cyber_write" access="permitAll" requires-channel="http"/>
+		<intercept-url pattern="/cs/cyber_writeAction" access="permitAll" requires-channel="http"/>
+		<intercept-url pattern="/ajax/**" access="permitAll" requires-channel="http"/>
+		<intercept-url pattern="/console" access="permitAll" requires-channel="http"/>
+		<intercept-url pattern="/console/login" access="permitAll" requires-channel="http"/>
+		<intercept-url pattern="/console/**" access="hasRole('ROLE_ADMIN')" requires-channel="http"/>
+		<!-- HTTP용 END -->
+						
+		<intercept-url pattern="/**" requires-channel="http"/>
+		
+		<csrf disabled="true"/>
+
+		<form-login 
+			login-page ="/console/login"	
+			username-parameter="admID"
+			password-parameter="admPW"
+			login-processing-url="/console/loginAction"
+			authentication-failure-handler-ref="loginFailureHandler"
+			authentication-success-handler-ref="loginSuccessHandler"
+		/>	
+		
+		<logout
+			invalidate-session="true"
+			logout-success-url="/console/login"
+			logout-url="/console/logout"
+			delete-cookies="menuList"
+		/>		
+		<http-basic />		
+ 	</http>
+ 	
+	<beans:bean id="loginSuccessHandler" class="kr.co.realty.domain.LoginSuccessHandler" />
+	<beans:bean id="loginFailureHandler" class="kr.co.realty.domain.LoginFailureHandler" />
+	<beans:bean id="securityService" class="kr.co.realty.data.security.service.SecurityService" /> 
+	<beans:bean id="customAuthenticationProvider" class="kr.co.realty.domain.CustomAuthenticationProvider" />
+	
+    <authentication-manager>
+    	<authentication-provider ref="customAuthenticationProvider" />
+	</authentication-manager>	
+	<beans:bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+</beans:beans>

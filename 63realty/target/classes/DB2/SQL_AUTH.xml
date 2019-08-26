@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="auth">
+	<resultMap id="AuthVO" type="kr.co.realty.data.auth.vo.AuthVO">
+		<result property = "admID"                    column="ADM_ID" />
+		<result property = "menuSeq"	                  column="MENU_SEQ" />		
+	</resultMap>
+	<insert id="insertAdminAuth" parameterType="AuthVO">
+		INSERT INTO
+			HPCDTA.ADM_AUTH
+		(
+		ADM_ID
+		,MENU_SEQ		
+		)
+		VALUES (
+		#{admID}
+		, #{menuSeq}	
+		)
+	</insert>
+	
+	<delete id="deleteAdminAuth" parameterType="AuthVO">		
+		DELETE FROM HPCDTA.ADM_AUTH WHERE ADM_ID = #{admID}
+	</delete>
+</mapper>
